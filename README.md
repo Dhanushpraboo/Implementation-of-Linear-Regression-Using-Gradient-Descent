@@ -7,79 +7,94 @@ To write a program to predict the profit of a city using the linear regression m
 1. Hardware – PCs
 2. Anaconda – Python 3.7 Installation / Jupyter notebook
 
-##Algorithm
+## Algorithm
+1. Import the required library and read the dataframe.
+2. Write a function computeCost to generate the cost function.
+3.Perform iterations og gradient steps with learning rate.
+4.Plot the Cost function using Gradient Descent and generate the required graph.
+## Program:
 ~~~
-1.Import the standard libraries in python required for finding Gradient Design.
-2.Read the dataset file and check any null value using .isnull() method.
-3.Declare the default variables with respective values for linear regression.
-4.Calculate the loss using Mean Square Error.
-5.Predict the value of y.
-6.Plot the graph respect to hours and scores using .scatterplot() method for Linear Regression.
-7.Plot the graph respect to loss and iterations using .plot() method for Gradient Descent.
-~~~
-##Program:
-~~~
-
+/*
 Program to implement the linear regression using gradient descent.
-Developed by:S Dhanush praboo
+Developed by: S Dhanush Praboo
 RegisterNumber: 212221230019
-
-
-import pandas as pd
+*/
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
-df=pd.read_csv('student_scores - student_scores.csv')
-df.head()
-df.tail()
+import pandas as pd
 
-#checking for null values in dataset
-df.isnull().sum()
+data=pd.read_csv("/content/ex1.txt", header=None)
 
-#To calculate Gradient decent and Linear Descent
-x=df.Hours
-x.head()
+plt.scatter(data[0],data[1])
+plt.xticks(np.arange(5,30,step=5))
+plt.yticks(np.arange(-5,30,step=5))
+plt.xlabel("Population of City (10,000s)")
+plt.ylabel("Profit ($10,000)")
+plt.title("Profit Prediction")
 
-y=df.Scores
-y.head()
+def computeCost(X,y,theta):
+  m=len(y) #length of the training data
+  h=X.dot(theta) #hypothesis
+  square_err=(h - y)**2
 
-n=len(x)
-m=0
-c=0
-L=0.001
-loss=[]
-for i in range(10000):
-    ypred = m*x + c
-    MSE = (1/n) * sum((ypred - y)*2)
-    dm = (2/n) * sum(x*(ypred-y))
-    dc = (2/n) * sum(ypred-y)
-    c = c-L*dc
-    m = m-L*dm
-    loss.append(MSE)
-print(m,c)
+  return 1/(2*m) * np.sum(square_err)     #returning
 
-#plotting Linear Regression graph
-y_pred=m*x+c
-plt.scatter(x,y,color="violet")
-plt.plot(x,y_pred,color="purple")
-plt.xlabel("Study Hours")
-plt.ylabel("Scores")
-plt.title("Study hours vs Scores")
-plt.show()
+data_n=data.values
+m=data_n[:,0].size
+X=np.append(np.ones((m,1)),data_n[:,0].reshape(m,1),axis=1)
+y=data_n[:,1].reshape(m,1)
+theta=np.zeros((2,1))
+ 
+computeCost(X,y,theta)  # Call the function
 
-#plotting Gradient Descent graph
-plt.plot(loss, color="skyblue")
-plt.xlabel("Iterations")
-plt.ylabel("Loss")
-plt.show()
+def gradientDescent(X,y,theta,alpha,num_iters):
+  m=len(y)
+  J_history=[]
+
+  for i in range(num_iters):
+    predictions = X.dot(theta)
+    error = np.dot(X.transpose(),(predictions -y))
+    descent=alpha * 1/m * error
+    theta-=descent
+    J_history.append(computeCost(X,y,theta))
+
+  return theta, J_history
+
+theta,J_history = gradientDescent(X,y,theta,0.01,1500)
+print("h(x)  ="+str(round(theta[0,0],2))+" + "+str(round(theta[1,0],2))+"x1")
+
+plt.plot(J_history)
+plt.xlabel("Iteration")
+plt.ylabel("$J(\Theta)$")
+plt.title("Cost function using Gradient Descent")
+
+plt.scatter(data[0],data[1])
+x_value=[x for x in range(25)]
+y_value=[y*theta[1]+theta[0] for y in x_value]
+plt.plot(x_value,y_value,color="g")
+plt.xticks(np.arange(5,30,step=5))
+plt.yticks(np.arange(-5,30,step=5))
+plt.xlabel("Population of City (10,000s)")
+plt.ylabel("Profit ($10,000)")
+plt.title("Profit Prediction")
+
+def predict(x,theta):
+  predictions=np.dot(theta.transpose(),x)
+
+  return predictions[0]
+
+predict1=predict(np.array([1,3.5]),theta)*10000
+print("For population = 35,000,we predict a profit of $"+str(round(predict1,0)))
+
+predict2=predict(np.array([1,7]),theta)*10000
+print("For population = 70,000,we predict a profit of $"+str(round(predict2,0)))
 ~~~
 ## Output:
-![linear regression using gradient descent](01.png)
-![output](02.png)
-![output](3.png)
-![output](4.png)
-![output](5.png)
-
+![image](https://user-images.githubusercontent.com/94426323/203989362-dc6247b8-d6cb-4e36-b47d-8d206a45e365.png)
+![image](https://user-images.githubusercontent.com/94426323/203989383-e11b6abb-9f41-43c4-ae8a-3bdfb5594b99.png)
+![image](https://user-images.githubusercontent.com/94426323/203989418-39c7c6d2-1d1e-4f7f-9ffa-1552f972b9e1.png)
+![image](https://user-images.githubusercontent.com/94426323/203989433-b6c9dc4d-52d1-4b1f-814b-e9293f8cf88d.png)
+![image](https://user-images.githubusercontent.com/94426323/203989451-fa137e50-c89e-48ec-af0e-f751708bf9a8.png)
 
 ## Result:
 Thus the program to implement the linear regression using gradient descent is written and verified using python programming.
